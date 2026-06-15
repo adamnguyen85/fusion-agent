@@ -18,6 +18,39 @@ It's a set of three [Claude Code](https://claude.com/claude-code) skills + one s
 
 Every mode is **fail-closed** (a reviewer error or unparseable verdict → it tells you, never silently skips) and **never auto-commits or pushes**. The reviewer is **read-only by default** (the bundled `codex exec -s read-only -` is sandboxed); if you swap in a custom `REVIEWER_CMD`, keeping it read-only is your responsibility.
 
+## Architecture
+
+Where a compound model fans one prompt out to a panel and a judge blends the answers, fusion-agent is a **loop**: one builder, one reviewer, arguing until they converge — or hit the round cap and escalate to you. The reviewer never edits code; you stay the final gate.
+
+```
+                ╭──────────── REVISE → Claude revises, calls again ───────────╮
+                │                     (round 1 … CAP)                         │
+                │                                                             │
+  ┌──────────┐  │   plan / diff    ┌──────────────────┐                       │
+  │  Claude  │ ─┴───────────────▶  │  Reviewer model  │                       │
+  │   Code   │                     │  Codex / Gemini  │ ── verdict ──┬────────╯
+  │(builder) │ ◀── findings ────── │   (read-only)    │              │
+  └────┬─────┘                     └──────────────────┘          CONSENSUS
+       │                                                             │
+       ▼                                                             ▼
+  you approve ──▶ build / commit                              present to you
+   (never auto-pushes)                                  · consensus → final + rationale
+                                                        · hit CAP   → 5-section escalation
+```
+
+`/fusion-open` runs one extra step first — both sides draft a proposal **blind** (neither sees the other's), then the merge feeds into the same loop:
+
+```
+                     ┌─▶  Claude drafts a proposal   ─┐   blind: neither sees
+  open question ─────┤                                ├──  the other's first draft
+                     └─▶  Reviewer drafts a proposal ─┘
+                                     │
+                                     ▼
+                            Claude merges  ──▶  debate loop  ──▶  you
+                   (both proposals attached verbatim; the reviewer
+                    first audits the merge for honesty, then argues)
+```
+
 ## Install
 
 You need:
