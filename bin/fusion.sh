@@ -76,11 +76,16 @@ run_reviewer() { bash -c "$REVIEWER_CMD" < "$1"; }
 # Scrub likely secrets from captured test/build output before it reaches the
 # reviewer. The SECRET_EXCLUDES pathspec only guards git diff/ls-files; the
 # test-output channel was unguarded — so a failing test that prints env could
-# leak tokens through Fusion. Redact connection-string credentials and
-# secret-named KEY=value / KEY: value pairs.
+# leak tokens through Fusion. Redact connection-string credentials,
+# secret-named KEY=value / KEY: value pairs, AND JSON-quoted "key":"value"
+# (a failing test often dumps JSON; the KEY[:=] regex misses it because the
+# closing quote sits between the key and the colon, so the secret leaked).
+# Secret names are matched case-insensitively, covering camelCase keys
+# (pageAccessToken, clientSecret).
 scrub_secrets() {
   perl -pe '
     s{([A-Za-z][A-Za-z0-9+.\-]*://[^:/@\s]+):[^@\s]+@}{$1:***REDACTED***@}g;
+    s{("[A-Za-z0-9_-]*(?:SECRET|TOKEN|PASSWORD|PASSWD|API[_-]?KEY|ACCESS[_-]?KEY|PRIVATE[_-]?KEY|CLIENT[_-]?SECRET|CREDENTIAL|AUTHORIZATION|BEARER)[A-Za-z0-9_-]*"\s*:\s*)"[^"]*"}{$1"***REDACTED***"}gi;
     s{\b([A-Z0-9_]*(?:SECRET|TOKEN|PASSWORD|PASSWD|API[_-]?KEY|ACCESS[_-]?KEY|PRIVATE[_-]?KEY|CLIENT[_-]?SECRET|CREDENTIAL|AUTHORIZATION|BEARER)[A-Z0-9_]*\s*[:=]\s*).+}{$1***REDACTED***}gi;
   ' "$1"
 }
