@@ -84,6 +84,8 @@ ROUND_CAP=3
 EXTRA_SECRET_EXCLUDE_GLOBS=()                # append MORE secret paths; built-in defaults always apply and can't be removed
 ```
 
+> **The reviewer is only as good as `MEMORY_FILES`.** The reviewer reads your repo read-only, but code alone can't tell it which directions you already considered and rejected, which decisions are locked, or which gotchas bite — especially in `/fusion-open`, where there's no plan to anchor on. That context lives in whatever files you point `MEMORY_FILES` at. If your repo keeps a decision log / memory / architecture doc (e.g. `AGENTS.md`, `CLAUDE.md`, `docs/decisions.md`), list it here so the reviewer reads it *first* — otherwise it debates blind and may re-propose things you've already ruled out. fusion-agent doesn't generate this context for you; it consumes whatever you maintain.
+
 ## Usage
 
 In Claude Code, just type the skill:
