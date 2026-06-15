@@ -73,6 +73,18 @@ Read-only — do NOT modify any file. Answer concisely and go straight to the we
 # Run the reviewer with the prompt file on stdin. Reviewer stays read-only.
 run_reviewer() { bash -c "$REVIEWER_CMD" < "$1"; }
 
+# Scrub likely secrets from captured test/build output before it reaches the
+# reviewer. The SECRET_EXCLUDES pathspec only guards git diff/ls-files; the
+# test-output channel was unguarded — so a failing test that prints env could
+# leak tokens through Fusion. Redact connection-string credentials and
+# secret-named KEY=value / KEY: value pairs.
+scrub_secrets() {
+  perl -pe '
+    s{([A-Za-z][A-Za-z0-9+.\-]*://[^:/@\s]+):[^@\s]+@}{$1:***REDACTED***@}g;
+    s{\b([A-Z0-9_]*(?:SECRET|TOKEN|PASSWORD|PASSWD|API[_-]?KEY|ACCESS[_-]?KEY|PRIVATE[_-]?KEY|CLIENT[_-]?SECRET|CREDENTIAL|AUTHORIZATION|BEARER)[A-Z0-9_]*\s*[:=]\s*).+}{$1***REDACTED***}gi;
+  ' "$1"
+}
+
 validate_verdict() {
   local out="$1" n="$2" last
   last="$(grep -v '^[[:space:]]*$' "$out" | tail -1 | tr -d '\r')"
@@ -155,7 +167,7 @@ case "$MODE" in
         echo "=== REAL EXECUTION RESULT (test/build, exit=$TEST_RC) ==="
         echo "Command: $TEST_CMD"
         echo "EXECUTION EVIDENCE — trust this over speculation. If the tests pass but you still suspect a broken path, say 'not covered by tests'."
-        echo '```'; cat "$TEST_OUT"; echo '```'
+        echo '```'; scrub_secrets "$TEST_OUT"; echo '```'
       fi
       echo
       echo "=== DIFF BUNDLE ==="; cat "$BUNDLE"

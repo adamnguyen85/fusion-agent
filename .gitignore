@@ -4,6 +4,10 @@ fusion.config.sh
 # Debate/review state (per-run artifacts).
 .agent/
 
+# Local-only build memory (Brain Memory) — never published; GitHub is for the
+# public tool, not the internal build notes.
+brain/
+
 # OS / editor noise
 .DS_Store
 *.swp
