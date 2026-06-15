@@ -6,7 +6,7 @@
 
 It's a set of three [Claude Code](https://claude.com/claude-code) skills + one shell script. No API keys beyond the two CLIs you already have.
 
-> Inspired by the idea behind OpenRouter Fusion (panel + cross-examination), but local, cheap, and repo-aware. See [how it differs](#how-it-differs) below.
+> Inspired by [OpenRouter Fusion](https://x.com/OpenRouter/status/2065856853989270011) — a compound model that blends several models into one answer — but local, cheap, and repo-aware. See [how it differs](#how-it-differs) below.
 
 ## The three modes
 
@@ -84,10 +84,10 @@ In `/fusion-open`, Claude is both a *proposer* and the *merger* — a conflict o
 
 ## How it differs
 
-- **Parallel panel + judge** (OpenRouter Fusion, [fusion-fable](https://github.com/duolahypercho/fusion-fable)): N models answer independently, one judge synthesizes. Great for one high-quality answer to one question. Repo-blind, costs N×.
+- **Compound model / panel** ([OpenRouter Fusion](https://x.com/OpenRouter/status/2065856853989270011), and clones like [fusion-fable](https://github.com/duolahypercho/fusion-fable)): several models answer independently and a judge blends them into one stronger answer. Great for one high-quality answer to one isolated question. Repo-blind, costs N×.
 - **fusion-agent**: sequential adversarial debate + co-proposal, **repo-aware**, **2 models max**, cheap. The reviewer reads your real repo and runs against real test output.
 
-Different tool for a different job — pick the panel when you want the best single answer to an isolated question; pick fusion-agent when you want a plan/diff hardened against a skeptic who knows your codebase.
+Different tool for a different job — pick a compound model when you want the best single answer to an isolated question; pick fusion-agent when you want a plan/diff hardened against a skeptic who knows your codebase.
 
 ## License
 

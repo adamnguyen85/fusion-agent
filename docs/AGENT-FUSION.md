@@ -2,7 +2,7 @@
 
 The canonical doc for the mechanism. The skill files only enforce sequence; the rules live here.
 
-Inspired by the idea behind OpenRouter Fusion (panel + cross-examination + synthesis), applied to coding: **two models argue; an answer only ships after it survives the critique.** It does NOT use a Fusion API — instead two coding agents work the same repo: Claude Code (the builder) and a reviewer model run headless via a CLI (Codex `gpt-5.5` by default; swap it in config).
+Inspired by [OpenRouter Fusion](https://x.com/OpenRouter/status/2065856853989270011) (a compound model that blends several models into one answer), applied to coding: **two models argue; an answer only ships after it survives the critique.** It does NOT use a Fusion API — instead two coding agents work the same repo: Claude Code (the builder) and a reviewer model run headless via a CLI (Codex `gpt-5.5` by default; swap it in config).
 
 ## The three modes
 
@@ -46,8 +46,8 @@ Unlike `plan`: there is NO plan to attack yet — both sides propose INDEPENDENT
 | 3  | FAIL-CLOSED (reviewer error) → tell the human |
 | 2  | bad usage |
 
-## How it differs from fusion-fable / OpenRouter Fusion
-- A **parallel panel + judge** (fusion-fable, OpenRouter Fusion): N models answer independently, one judge synthesizes. One question → one high-quality answer. Repo-blind, costs N×.
+## How it differs from a compound model (OpenRouter Fusion)
+- A **compound model / parallel panel** ([OpenRouter Fusion](https://x.com/OpenRouter/status/2065856853989270011), and clones like fusion-fable): several models answer independently, a judge blends them. One question → one high-quality answer. Repo-blind, costs N×.
 - **fusion-agent**: sequential adversarial debate + co-proposal, repo-aware, 2 models max, cheap. The reviewer reads your actual repo and runs against real test output. Different tool for a different job.
 
 ## Environment
