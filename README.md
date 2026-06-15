@@ -85,6 +85,8 @@ EXTRA_SECRET_EXCLUDE_GLOBS=()                # append MORE secret paths; built-i
 ```
 
 > **The reviewer is only as good as `MEMORY_FILES`.** The reviewer reads your repo read-only, but code alone can't tell it which directions you already considered and rejected, which decisions are locked, or which gotchas bite — especially in `/fusion-open`, where there's no plan to anchor on. That context lives in whatever files you point `MEMORY_FILES` at. If your repo keeps a decision log / memory / architecture doc (e.g. `AGENTS.md`, `CLAUDE.md`, `docs/decisions.md`), list it here so the reviewer reads it *first* — otherwise it debates blind and may re-propose things you've already ruled out. fusion-agent doesn't generate this context for you; it consumes whatever you maintain.
+>
+> Need a ready-made memory to point at? [**brain-memory**](https://github.com/adamnguyen85/brain-memory) is the companion tool — a repo-local markdown memory that survives context compaction. Point `MEMORY_FILES` at `brain/memory/startup.md brain/_index.md` and the reviewer inherits your locked decisions and gotchas. brain-memory *produces* the context; fusion-agent *consumes* it.
 
 ## Usage
 
